@@ -1,0 +1,6 @@
+{
+  "name": "privacy-radar-extension",
+  "private": true,
+  "scripts": { "lint": "eslint ." },
+  "devDependencies": { "eslint": "^9.0.0" }
+}
