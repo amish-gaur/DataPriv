@@ -2,17 +2,332 @@
 <html>
 <head>
   <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
-    body{font:14px system-ui;padding:12px;width:340px}
-    .risk{font-weight:700}
-    .pill{display:inline-block;padding:2px 8px;border-radius:999px;border:1px solid #ddd}
-    .muted{color:#666}
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+      width: 400px;
+      min-height: 250px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: #333;
+    }
+    
+    .container {
+      padding: 16px;
+    }
+    
+    .header {
+      text-align: center;
+      color: white;
+      margin-bottom: 16px;
+    }
+    
+    .header h1 {
+      font-size: 20px;
+      font-weight: 700;
+      margin-bottom: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    
+    .header p {
+      font-size: 13px;
+      opacity: 0.9;
+      font-weight: 400;
+    }
+    
+    .card {
+      background: white;
+      border-radius: 16px;
+      padding: 20px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+      backdrop-filter: blur(10px);
+    }
+    
+    .scan-button {
+      width: 100%;
+      padding: 14px 20px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      border-radius: 12px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    
+    .scan-button:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 16px rgba(102, 126, 234, 0.4);
+    }
+    
+    .scan-button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+    
+    .risk-score {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 16px;
+      border-radius: 12px;
+      font-weight: 600;
+      font-size: 16px;
+      margin-bottom: 16px;
+      flex-direction: column;
+      align-items: flex-start;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .risk-score::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      border-radius: 12px 12px 0 0;
+    }
+    
+    .risk-score.low {
+      background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+      color: #155724;
+    }
+    
+    .risk-score.low::before {
+      background: linear-gradient(90deg, #28a745, #20c997);
+    }
+    
+    .risk-score.medium {
+      background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
+      color: #856404;
+    }
+    
+    .risk-score.medium::before {
+      background: linear-gradient(90deg, #ffc107, #fd7e14);
+    }
+    
+    .risk-score.high {
+      background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%);
+      color: #721c24;
+    }
+    
+    .risk-score.high::before {
+      background: linear-gradient(90deg, #dc3545, #e74c3c);
+    }
+    
+    .risk-info {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+    
+    .risk-number {
+      font-size: 24px;
+      font-weight: 700;
+    }
+    
+    .risk-label {
+      font-size: 14px;
+      font-weight: 500;
+    }
+    
+    .analysis-method {
+      font-size: 11px;
+      font-weight: 500;
+      opacity: 0.8;
+      padding: 4px 8px;
+      background: rgba(255, 255, 255, 0.3);
+      border-radius: 8px;
+      margin-top: 4px;
+    }
+    
+    .summary-grid {
+      display: grid;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+    
+    .summary-item {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      padding: 12px;
+      background: #f8f9fa;
+      border-radius: 8px;
+      border-left: 3px solid #667eea;
+    }
+    
+    .summary-label {
+      font-size: 12px;
+      font-weight: 600;
+      color: #495057;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    
+    .summary-value {
+      font-size: 13px;
+      color: #212529;
+      line-height: 1.4;
+    }
+    
+    .summary-value.empty {
+      color: #6c757d;
+      font-style: italic;
+    }
+    
+    .insights-section {
+      margin-top: 16px;
+      padding: 12px;
+      background: linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 100%);
+      border-radius: 8px;
+      border: 1px solid #e1bee7;
+    }
+    
+    .insights-title {
+      font-size: 12px;
+      font-weight: 600;
+      color: #4a148c;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    
+    .insights-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+    
+    .insight-tag {
+      font-size: 10px;
+      padding: 4px 8px;
+      border-radius: 12px;
+      font-weight: 500;
+    }
+    
+    .insight-tag.concern {
+      background: #ffebee;
+      color: #c62828;
+      border: 1px solid #ffcdd2;
+    }
+    
+    .insight-tag.strength {
+      background: #e8f5e8;
+      color: #2e7d32;
+      border: 1px solid #c8e6c9;
+    }
+    
+    .links {
+      display: flex;
+      gap: 12px;
+      margin-top: 16px;
+      padding-top: 16px;
+      border-top: 1px solid #e9ecef;
+    }
+    
+    .link {
+      flex: 1;
+      padding: 8px 12px;
+      background: #f8f9fa;
+      color: #495057;
+      text-decoration: none;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 500;
+      text-align: center;
+      transition: all 0.2s ease;
+      border: 1px solid #dee2e6;
+    }
+    
+    .link:hover {
+      background: #667eea;
+      color: white;
+      transform: translateY(-1px);
+    }
+    
+    .loading {
+      text-align: center;
+      color: #6c757d;
+      font-size: 13px;
+      padding: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    
+    .loading::after {
+      content: '';
+      width: 16px;
+      height: 16px;
+      border: 2px solid #e9ecef;
+      border-top: 2px solid #667eea;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+    
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    
+    .error {
+      background: #f8d7da;
+      color: #721c24;
+      padding: 12px;
+      border-radius: 8px;
+      border: 1px solid #f5c6cb;
+      font-size: 12px;
+      line-height: 1.4;
+    }
+    
+    .muted {
+      color: #6c757d;
+      font-size: 13px;
+      text-align: center;
+      padding: 20px 0;
+      line-height: 1.4;
+    }
   </style>
 </head>
 <body>
-  <button id="scan">Scan this site</button>
-  <div id="result" class="muted">Click scan to summarize privacy & terms.</div>
-  <script src="heuristic.js"></script>
+  <div class="container">
+    <div class="header">
+      <h1>🔒 Privacy Radar</h1>
+      <p>Get instant privacy insights for any website</p>
+    </div>
+    
+    <div class="card">
+      <button id="scan" class="scan-button">
+        🔍 Scan This Site
+      </button>
+      <div id="result" class="muted">
+        Click scan to analyze this site's privacy policy and get a risk assessment.
+      </div>
+    </div>
+  </div>
+  
   <script src="popup.js"></script>
 </body>
 </html>

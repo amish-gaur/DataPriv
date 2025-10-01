@@ -7,7 +7,10 @@ function findPolicyLinks() {
   return [...new Set(urls)].slice(0, 8);
 }
 chrome.runtime.onMessage.addListener((msg, _sender, sendResponse) => {
+  console.log("📋 Content script received message:", msg);
   if (msg.type === "GET_POLICY_LINKS") {
-    sendResponse({ domain: location.hostname, links: findPolicyLinks() });
+    const links = findPolicyLinks();
+    console.log("🔗 Found policy links:", links);
+    sendResponse({ domain: location.hostname, links: links });
   }
 });

@@ -17,12 +17,16 @@ def pick_best_url(domain: str, candidates: list[str]) -> str | None:
     return ranked[0]
 
 async def fetch_text(url: str) -> tuple[str, str]:
-    async with httpx.AsyncClient(follow_redirects=True, timeout=15) as client:
-        r = await client.get(url)
-        r.raise_for_status()
-        html = r.text
-        doc = Document(html)
-        readable_html = doc.summary()
-        soup = BeautifulSoup(readable_html, "html.parser")
-        text = soup.get_text(separator="\n", strip=True)
-        return (html, text)
+    try:
+        async with httpx.AsyncClient(follow_redirects=True, timeout=15) as client:
+            r = await client.get(url)
+            r.raise_for_status()
+            html = r.text
+            doc = Document(html)
+            readable_html = doc.summary()
+            soup = BeautifulSoup(readable_html, "html.parser")
+            text = soup.get_text(separator="\n", strip=True)
+            return (html, text)
+    except Exception as e:
+        print(f"Error fetching {url}: {e}")
+        return ("", "")

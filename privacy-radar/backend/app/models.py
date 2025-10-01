@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from typing import List, Optional
+from typing import List, Optional, Dict, Any
 
 class SummarizeRequest(BaseModel):
     domain: str
@@ -17,3 +17,4 @@ class SummarizeResponse(BaseModel):
     source_url: str
     summary: Summary
     risk_score: float
+    enhanced_insights: Optional[Dict[str, Any]] = None
